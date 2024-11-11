@@ -129,7 +129,7 @@
             height: 24px;
         }
 
-        .player .progress {
+        .player .audio-progress {
             width: 100%;
             height: 5px;
             background: #ddd;
@@ -138,7 +138,7 @@
             overflow: hidden;
         }
 
-        .player .progress-bar {
+        .player .audio-progress-bar {
             width: 0%;
             height: 100%;
             background: #333;
@@ -146,7 +146,6 @@
             top: 0;
             left: 0;
         }
-
 
 
 
@@ -354,7 +353,7 @@
         <div class="progress"></div>
     </div>
 
-    <!-- 音乐播放器 -->
+   <!-- 音乐播放器 -->
     <div class="player">
         <div class="play-btn" onclick="togglePlay()">
             <!-- SVG 播放按钮 -->
@@ -367,14 +366,12 @@
                 <rect x="15" y="3" width="4" height="18" fill="#333" />
             </svg>
         </div>
-        <div class="progress">
-            <div class="progress-bar" id="progress-bar"></div>
+        <div class="audio-progress">
+            <div class="audio-progress-bar" id="audio-progress-bar"></div> <!-- 将音乐播放器进度条的 ID 改为 audio-progress-bar -->
         </div>
     </div>
 
     <audio id="audio" src="https://limophoto.github.io/musicplayer/%E5%A3%B0%E9%9F%B3%E7%A2%8E%E7%89%87%E4%B9%90%E9%98%9F%20-%20%E5%A4%A9%E8%BE%B9%E4%B8%80%E6%9C%B5%E4%BA%91.mp3" preload="auto"></audio>
-
-
 
 
     
@@ -393,32 +390,44 @@
 
 
         
+        // 问题 1：避免重复定义 progressBar，将音乐播放器和轮播的进度条变量分开
         const audio = document.getElementById('audio');
         const playIcon = document.getElementById('play-icon');
         const pauseIcon = document.getElementById('pause-icon');
-        const progressBar = document.getElementById('progress-bar');
+        const audioProgressBar = document.getElementById('audio-progress-bar'); // 音乐播放器进度条
 
         function togglePlay() {
             if (audio.paused) {
                 audio.play();
-                playIcon.style.display = 'none';
-                pauseIcon.style.display = 'block';
             } else {
                 audio.pause();
-                playIcon.style.display = 'block';
-                pauseIcon.style.display = 'none';
             }
         }
 
-        audio.ontimeupdate = () => {
-            const progress = (audio.currentTime / audio.duration) * 100;
-            progressBar.style.width = progress + '%';
+        // 问题 7：在音频播放和暂停事件中切换图标，确保播放状态一致
+        audio.onplay = () => {
+            playIcon.style.display = 'none';
+            pauseIcon.style.display = 'block';
         };
 
-          flkty.on('scroll', function(progress) {
-            progress = Math.max(0, Math.min(1, progress));
-            document.querySelector('.progress-bar .progress').style.width = `${progress * 100}%`;
-        });
+        audio.onpause = () => {
+            playIcon.style.display = 'block';
+            pauseIcon.style.display = 'none';
+        };
+
+        // 更新音频进度条
+        audio.ontimeupdate = () => {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            audioProgressBar.style.width = progress + '%';
+        };
+
+        // 问题 6：在音频播放结束后将进度条重置
+        audio.onended = () => {
+            audioProgressBar.style.width = '0%';
+            playIcon.style.display = 'block';
+            pauseIcon.style.display = 'none';
+        };
+
 
 
 
