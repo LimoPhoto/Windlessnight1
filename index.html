@@ -415,6 +415,11 @@
             progressBar.style.width = progress + '%';
         };
 
+          flkty.on('scroll', function(progress) {
+            progress = Math.max(0, Math.min(1, progress));
+            document.querySelector('.progress-bar .progress').style.width = `${progress * 100}%`;
+        });
+
 
 
 
