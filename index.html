@@ -107,6 +107,50 @@
                 display: none !important;
             }
         }
+
+        /* 音乐播放器样式 */
+        .player {
+            position: fixed;
+            left: 10px;
+            bottom: 10px;
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 5px 10px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .play-btn {
+            cursor: pointer;
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+        }
+
+        .player .progress {
+            width: 100%;
+            height: 5px;
+            background: #ddd;
+            position: relative;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .player .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #333;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+
+
+
+        
          /* 全屏展示图片的覆盖层 */
         .fullscreen-overlay {
             position: fixed;
@@ -310,7 +354,30 @@
         <div class="progress"></div>
     </div>
 
+    <!-- 音乐播放器 -->
+    <div class="player">
+        <div class="play-btn" onclick="togglePlay()">
+            <!-- SVG 播放按钮 -->
+            <svg id="play-icon" viewBox="0 0 24 24" width="24" height="24" style="display: block;">
+                <polygon points="5,3 19,12 5,21" fill="#333" />
+            </svg>
+            <!-- SVG 暂停按钮 -->
+            <svg id="pause-icon" viewBox="0 0 24 24" width="24" height="24" style="display: none;">
+                <rect x="5" y="3" width="4" height="18" fill="#333" />
+                <rect x="15" y="3" width="4" height="18" fill="#333" />
+            </svg>
+        </div>
+        <div class="progress">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
 
+    <audio id="audio" src="https://limophoto.github.io/musicplayer/%E5%A3%B0%E9%9F%B3%E7%A2%8E%E7%89%87%E4%B9%90%E9%98%9F%20-%20%E5%A4%A9%E8%BE%B9%E4%B8%80%E6%9C%B5%E4%BA%91.mp3" preload="auto"></audio>
+
+
+
+
+    
 
     <!-- 引入Flickity JavaScript -->
     <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
@@ -323,7 +390,35 @@
             prevNextButtons: true
         });
 
-      
+
+
+        
+        const audio = document.getElementById('audio');
+        const playIcon = document.getElementById('play-icon');
+        const pauseIcon = document.getElementById('pause-icon');
+        const progressBar = document.getElementById('progress-bar');
+
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play();
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = 'block';
+            } else {
+                audio.pause();
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+            }
+        }
+
+        audio.ontimeupdate = () => {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            progressBar.style.width = progress + '%';
+        };
+
+
+
+
+        
 
         // 使用 window.matchMedia 判断是否为移动设备（宽度小于768px）
         const isMobileDevice = window.matchMedia("(max-width: 768px)").matches;
